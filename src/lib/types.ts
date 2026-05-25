@@ -49,6 +49,7 @@ export type Question = {
   points: number;
   passage?: string;
   rubric?: string[];
+  sampleAnswer?: string;
 };
 
 export type Assignment = {

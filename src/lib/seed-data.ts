@@ -17,6 +17,29 @@ export const children: Child[] = [
   }
 ];
 
+const sampleAnswers: Record<string, string> = {
+  "ella-1-r1": "Nora put the blue pencil on Max's desk because he was new and needed a pencil. She wanted to help him feel welcome.",
+  "ella-1-w1": "Ella saw a nervous new classmate at her table. She smiled and asked if they wanted to draw together. Ella shared her crayons and said, \"You can sit with me.\" The classmate felt calmer.",
+  "ella-2-r1": "Ben solved the problem of the bent bean plant. He tied it gently to a small stick so it could stand tall again.",
+  "ella-2-w1": "Ella saw that the jump ropes were tangled on the playground. She felt worried because no one could play. Ella asked a friend to hold one end. Then she slowly untangled the rope.",
+  "ella-3-r1": "After Lila shared the crackers, her friends helped her clean the table. Everyone had the same amount of crackers.",
+  "ella-3-w1": "Ella had a sandwich and shared it with a friend. She cut it into halves so each person got an equal part. Then she cut an apple into fourths for four friends. Everyone got a fair share.",
+  "ella-4-r1": "Maya fixed her mistake by erasing the backward letters, rereading the word slowly, and writing it again. Her second card was neat and correct.",
+  "ella-4-w1": "Ella rushed through her picture and made a big smudge. She felt upset, but she decided to redo it. Ella took her time and added bright colors. She learned that trying again can make work better.",
+  "ella-5-r1": "The lesson is that something can still be special even if it changes. Rina's star had a torn point, but Ella helped fold a new point and it still looked beautiful.",
+  "ella-5-w1": "Dear Rina, I noticed that your paper star tore and you felt unlucky. I liked how you let Ella help you fix it. My advice is to keep trying when something changes. Your star was still beautiful.",
+  "evelyn-1-r1": "The theme is that mistakes can help people improve. Ari's first bridge collapsed, but he studied the problem, rebuilt the base with triangles, and made a stronger model.",
+  "evelyn-1-w1": "One way to solve 36 / 4 is to think of multiplication: 4 x 9 = 36, so 36 / 4 = 9. Another way is to split 36 into four equal groups. Each group gets 9, so the answer is 9.",
+  "evelyn-2-r1": "The main idea is that honeybees help plants grow by moving pollen. Important details are that pollen sticks to a bee's body and rubs off when the bee visits another flower.",
+  "evelyn-2-w1": "The mistake is comparing only the denominators. If we make 2/3 into sixths, it becomes 4/6, so 4/6 and 2/3 are equal. A larger denominator does not always mean a larger fraction.",
+  "evelyn-3-r1": "The strongest detail is that Jada kept practicing after missing the first three shots and even tried again after getting tired. This shows persistence because she did not quit when practice was hard.",
+  "evelyn-3-w1": "First, multiply 5 bags by 8 marbles to get 40 marbles. Then subtract the 17 marbles you gave away: 40 - 17 = 23. Multiplication comes first because you need the total number of marbles before subtracting.",
+  "evelyn-4-r1": "The author's purpose is to explain how suspension bridges work and stay safe. The detail about strong cables holding up the road supports this because it teaches how the bridge is built.",
+  "evelyn-4-w1": "3/4 is greater than 5/8. I can use a common denominator: 3/4 = 6/8, and 6/8 is greater than 5/8. The common denominator method felt clearest because the denominators matched.",
+  "evelyn-5-r1": "The theme is that honesty means doing the right thing even when it takes extra effort. Noah could have hurried home, but he brought the wallet to the office and waited for the owner.",
+  "evelyn-5-w1": "The line plot shows that the study times were 20, 25, 25, 30, and 40 minutes. The most common time was 25 minutes because it appears twice. The range is 20 minutes, so the study times varied quite a bit."
+};
+
 const q = (
   id: string,
   section: Question["section"],
@@ -33,6 +56,7 @@ const q = (
   skill,
   answer,
   points: type === "short_text" ? 4 : 1,
+  sampleAnswer: sampleAnswers[id],
   ...extra
 });
 

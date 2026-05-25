@@ -85,6 +85,12 @@ export function ResultsView({ submissionId }: { submissionId: string }) {
                   <p className="mt-2 text-slate-700">Your answer: {answer.value || "No answer"}</p>
                   {answer.correction ? <p className="mt-2 text-coral">{answer.correction}</p> : null}
                   {answer.feedback ? <p className="mt-2 text-slate-700">{answer.feedback}</p> : null}
+                  {question?.sampleAnswer && (question.section === "reading" || question.section === "writing") ? (
+                    <div className="mt-3 rounded-md border border-leaf/20 bg-leaf/5 p-3">
+                      <p className="text-sm font-bold uppercase tracking-wide text-leaf">Sample answer</p>
+                      <p className="mt-1 text-sm text-slate-700">{question.sampleAnswer}</p>
+                    </div>
+                  ) : null}
                 </div>
                 <span className={`rounded-full px-3 py-1 text-sm font-bold ${answer.correct ? "bg-leaf/15 text-leaf" : "bg-coral/15 text-coral"}`}>
                   {answer.earnedPoints}/{answer.maxPoints}
