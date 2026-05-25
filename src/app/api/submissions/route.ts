@@ -30,6 +30,28 @@ const submissionSchema = z.object({
   feedback: z.string()
 });
 
+type SubmissionRow = {
+  id: string;
+  assignment_id: string;
+  score: number | string;
+  max_score: number | string;
+  percent: number;
+  feedback: string;
+  submitted_at: string;
+  children?: { slug?: ChildSlug } | Array<{ slug?: ChildSlug }> | null;
+  answers: Array<{
+    question_id: string;
+    value: string;
+    correct: boolean;
+    earned_points: number | string;
+    max_points: number | string;
+    correction: string | null;
+    feedback: string | null;
+    skill: string;
+    section: string;
+  }>;
+};
+
 async function ensureParent() {
   if (!supabaseAdmin) throw new Error("Supabase is not configured");
 
@@ -216,5 +238,55 @@ export async function POST(request: Request) {
 
     console.error("Supabase submission save failed", error);
     return NextResponse.json({ error: message || "Unable to save submission" }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  if (!supabaseAdmin) {
+    return NextResponse.json({ error: "Supabase is not configured" }, { status: 503 });
+  }
+
+  try {
+    const submissions = await supabaseAdmin
+      .from("submissions")
+      .select("id,assignment_id,score,max_score,percent,feedback,submitted_at,children(slug),answers(question_id,value,correct,earned_points,max_points,correction,feedback,skill,section)")
+      .order("submitted_at", { ascending: false })
+      .limit(100);
+
+    if (submissions.error) throw submissions.error;
+
+    const rows = submissions.data as unknown as SubmissionRow[];
+    const normalized = rows.map((submission) => ({
+      id: submission.id,
+      assignmentId: submission.assignment_id,
+      childId: Array.isArray(submission.children) ? submission.children[0]?.slug : submission.children?.slug,
+      submittedAt: submission.submitted_at,
+      score: Number(submission.score),
+      maxScore: Number(submission.max_score),
+      percent: submission.percent,
+      feedback: submission.feedback,
+      answers: submission.answers.map((answer) => ({
+        questionId: answer.question_id,
+        value: answer.value,
+        correct: answer.correct,
+        earnedPoints: Number(answer.earned_points),
+        maxPoints: Number(answer.max_points),
+        correction: answer.correction ?? undefined,
+        feedback: answer.feedback ?? undefined,
+        skill: answer.skill,
+        section: answer.section
+      }))
+    }));
+
+    return NextResponse.json({ submissions: normalized });
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : JSON.stringify(error);
+
+    console.error("Supabase submission fetch failed", error);
+    return NextResponse.json({ error: message || "Unable to fetch submissions" }, { status: 500 });
   }
 }

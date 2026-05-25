@@ -11,7 +11,20 @@ export function ParentProgress() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
   useEffect(() => {
-    setSubmissions(getDemoSubmissions());
+    const localSubmissions = getDemoSubmissions();
+    setSubmissions(localSubmissions);
+
+    fetch("/api/submissions")
+      .then(async (response) => {
+        if (!response.ok) return;
+        const body = (await response.json()) as { submissions?: Submission[] };
+        if (body.submissions?.length) {
+          setSubmissions(body.submissions);
+        }
+      })
+      .catch(() => {
+        setSubmissions(localSubmissions);
+      });
   }, []);
 
   const weakSkills = useMemo(() => summarizeWeakSkills(submissions), [submissions]);
