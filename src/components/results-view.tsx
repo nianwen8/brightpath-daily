@@ -9,16 +9,44 @@ import type { Submission } from "@/lib/types";
 
 export function ResultsView({ submissionId }: { submissionId: string }) {
   const [submission, setSubmission] = useState<Submission | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSubmission(getDemoSubmission(submissionId) ?? null);
+    const localSubmission = getDemoSubmission(submissionId);
+    if (localSubmission) {
+      setSubmission(localSubmission);
+      setLoading(false);
+      return;
+    }
+
+    fetch("/api/submissions")
+      .then(async (response) => {
+        if (!response.ok) return;
+        const body = (await response.json()) as { submissions?: Submission[] };
+        setSubmission(body.submissions?.find((item) => item.id === submissionId) ?? null);
+      })
+      .catch(() => {
+        setSubmission(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [submissionId]);
+
+  if (loading) {
+    return (
+      <Card>
+        <h1 className="text-2xl font-bold">Loading result...</h1>
+        <p className="mt-2 text-slate-700">Matching this submission with its worksheet.</p>
+      </Card>
+    );
+  }
 
   if (!submission) {
     return (
       <Card>
         <h1 className="text-2xl font-bold">Result not found</h1>
-        <p className="mt-2 text-slate-700">Demo results live in this browser. Try completing an assignment first.</p>
+        <p className="mt-2 text-slate-700">This result was not found in Supabase or this browser.</p>
         <Link className="mt-4 inline-flex rounded-md bg-leaf px-4 py-2 font-bold text-white" href="/dashboard">
           Back to dashboard
         </Link>
@@ -52,6 +80,7 @@ export function ResultsView({ submissionId }: { submissionId: string }) {
               <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-sm font-bold text-slate-500">Question {index + 1}</p>
+                  {question?.passage ? <p className="mt-2 rounded-md bg-skywash p-3 text-sm text-slate-700">{question.passage}</p> : null}
                   <h2 className="font-bold">{question?.prompt}</h2>
                   <p className="mt-2 text-slate-700">Your answer: {answer.value || "No answer"}</p>
                   {answer.correction ? <p className="mt-2 text-coral">{answer.correction}</p> : null}
