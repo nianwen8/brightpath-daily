@@ -23,7 +23,8 @@ export function StudentPage({ childId }: { childId: ChildSlug }) {
       });
     return map;
   }, [childId, submissions]);
-  const todaySubmission = completedByAssignment.get(today.id);
+  const nextAssignment = assignments.find((assignment) => !completedByAssignment.has(assignment.id)) ?? today;
+  const nextSubmission = completedByAssignment.get(nextAssignment.id);
 
   useEffect(() => {
     const localSubmissions = getDemoSubmissions();
@@ -54,14 +55,14 @@ export function StudentPage({ childId }: { childId: ChildSlug }) {
       <Card>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-leaf">{todaySubmission ? "Completed today" : "Ready now"}</p>
-            <h2 className="text-2xl font-bold">{today.title}</h2>
+            <p className="text-sm font-bold uppercase tracking-wide text-leaf">{nextSubmission ? "Completed today" : "Up next"}</p>
+            <h2 className="text-2xl font-bold">{nextAssignment.title}</h2>
             <p className="mt-1 text-slate-700">
-              {todaySubmission ? `${todaySubmission.percent}% complete. Nice work.` : "Math, vocabulary, reading, and writing in one calm practice."}
+              {nextSubmission ? `${nextSubmission.percent}% complete. Nice work.` : "Math, vocabulary, reading, and writing in one calm practice."}
             </p>
           </div>
-          <ButtonLink href={todaySubmission ? `/results/${todaySubmission.id}` : `/practice/${today.id}`} tone={childId === "ella" ? "coral" : "leaf"}>
-            {todaySubmission ? "Review result" : "Begin"}
+          <ButtonLink href={nextSubmission ? `/results/${nextSubmission.id}` : `/practice/${nextAssignment.id}`} tone={childId === "ella" ? "coral" : "leaf"}>
+            {nextSubmission ? "Review result" : "Begin"}
           </ButtonLink>
         </div>
       </Card>
@@ -79,11 +80,22 @@ export function StudentPage({ childId }: { childId: ChildSlug }) {
               {submission ? (
                 <>
                   <p className="mt-2 text-sm font-bold text-leaf">{submission.percent}% score</p>
-                  <ButtonLink href={`/results/${submission.id}`} tone="plain">
-                    Review
-                  </ButtonLink>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <ButtonLink href={`/results/${submission.id}`} tone="plain">
+                      Review
+                    </ButtonLink>
+                    <ButtonLink href={`/practice/${assignment.id}`} tone="plain">
+                      Practice again
+                    </ButtonLink>
+                  </div>
                 </>
-              ) : null}
+              ) : (
+                <div className="mt-3">
+                  <ButtonLink href={`/practice/${assignment.id}`} tone={childId === "ella" ? "coral" : "leaf"}>
+                    Start
+                  </ButtonLink>
+                </div>
+              )}
             </Card>
           );
         })}
